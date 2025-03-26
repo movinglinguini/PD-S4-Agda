@@ -1,0 +1,3 @@
+name : agda-pd-s4
+include : src/ carve-agda/src
+depend : standard-library-2.1
