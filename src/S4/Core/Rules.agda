@@ -26,7 +26,8 @@ module S4.Core.Rules
     variable
       n m : ℕ
       h h₁ h₂ : Hypothesis 
-      Δ Γ : Context n
+      Δ : Context n
+      Γ : Context m
       A B C : Proposition
 
   -- We give ourself a way to distinguish when a part of the context contains
@@ -60,7 +61,7 @@ module S4.Core.Rules
   extractOnlyValid-isValid ((fst , valid) ∷ Δ) = onlyv/s (extractOnlyValid-isValid Δ)
 
   {- Rules of Pfenning-Davies S4 using CARVe contexts. -}
-  data _⊢_ : ∀ { n } → Context n → Proposition × Hypothesis → Set where
+  data _⊢_ : Context n → Proposition × Hypothesis → Set where
     {- Truth judgements -}
     hyp :
       (A , true) ∈ Δ
@@ -84,9 +85,9 @@ module S4.Core.Rules
       → Δ ⊢ (B , true)
 
     ■I : 
-      (toVec (extractOnlyValid Δ)) ⊢ (A , true)
+      Δ ⊢ (A , true)  →   OnlyValid Δ   → OnlyTrue Γ
       -----------------------
-      → Δ ⊢ (■ A , true)
+      → (Δ ++ Γ) ⊢ (■ A , true)
 
     ■E :
       Δ ⊢ (■ A , true)    →   ((A , valid) ∷ Δ) ⊢ (C , true)
