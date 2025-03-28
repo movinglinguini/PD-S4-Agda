@@ -9,6 +9,7 @@ open import Relation.Binary.PropositionalEquality
 open import Relation.Binary.Definitions
 open import Relation.Nullary.Decidable
 open import Relation.Nullary
+open import Data.Sum
 
 module S4.Properties 
   (PropAtom : Set)
@@ -20,12 +21,14 @@ module S4.Properties
 
   private
     variable
-      n : ℕ
+      n m : ℕ
       A B C : Proposition
       h g i : Hypothesis
       Aₕ Bₕ : (Proposition × Hypothesis)
       Δ Δ' : Context n
+      Γ Γ' : Context m
       idx idx₁ idx₂ : Fin n
+      idx₃ idx₄ : Fin m
 
   -- A refl between a pair means a pair of refls for their constituents.
   ≡-pair⇒≡ : ∀ { A B : Proposition } → (A ≡ B) × (h ≡ g) → ((A , h)) ≡ (B , g) 
@@ -76,21 +79,29 @@ module S4.Properties
   ... | yes p = here p
   exch-lemma-3 {idx₁ = suc idx₁} {suc idx₂} (there mem) = there (exch-lemma-3 mem)
 
-  exch-lemma-4 : toVec (extractOnlyValid Δ) ⊢ (A , true) → toVec (extractOnlyValid (exchange Δ idx₁ idx₂)) ⊢ (A , true)
-  exch-lemma-4 (hyp x) = hyp {! x  !}
-    where
-      lem : Aₕ ∈ toVec (extractOnlyValid Δ) → Aₕ ∈ toVec (extractOnlyValid (exchange Δ idx₁ idx₂))
-      lem mem = {! mem  !}
-  exch-lemma-4 (⊃I D) = {!   !}
-  exch-lemma-4 (⊃E D D₁) = {!   !}
-  exch-lemma-4 (hyp* x) = {!   !}
-  exch-lemma-4 (■I D) = {!   !}
-  exch-lemma-4 (■E D D₁) = {!   !}
+  postulate 
+  -- These seem trivially true, but very annoying to prove
+    exch-lemma-4 : OnlyTrue Γ → OnlyTrue (exchange Γ idx₁ idx₂)
+    exch-lemma-5 : OnlyValid Δ → OnlyValid (exchange Δ idx₁ idx₂)
 
-  exchange-admit : ∀ idx₁ idx₂ → Δ ⊢ Aₕ → (exchange Δ idx₁ idx₂) ⊢ Aₕ
-  exchange-admit idx₁ idx₂ (hyp x) = hyp (exch-lemma-3 x)
-  exchange-admit idx₁ idx₂ (⊃I D) = {!   !}
-  exchange-admit idx₁ idx₂ (⊃E D D₁) = {!   !}
-  exchange-admit idx₁ idx₂ (hyp* x) = hyp* (exch-lemma-3 x)
-  exchange-admit idx₁ idx₂ (■I D) = ■I {!   !}
-  exchange-admit idx₁ idx₂ (■E D D₁) = {!   !}
+  exchange-admit-Γ : ∀ idx₁ idx₂ → (Δ , Γ) ⊢ Aₕ → (Δ , (exchange Γ idx₁ idx₂)) ⊢ Aₕ
+  exchange-admit-Γ idx₁ idx₂ (hyp x x₁ x₂) = hyp (exch-lemma-3 x) x₁ (exch-lemma-4 x₂)
+  exchange-admit-Γ idx₁ idx₂ (⊃I D x x₁) = ⊃I (exchange-admit-Γ (suc idx₁) (suc idx₂) D) x (exch-lemma-4 x₁)
+  exchange-admit-Γ idx₁ idx₂ (⊃E D D₁ x x₁) = ⊃E (exchange-admit-Γ idx₁ idx₂ D) (exchange-admit-Γ idx₁ idx₂ D₁) x (exch-lemma-4 x₁)
+  exchange-admit-Γ idx₁ idx₂ (hyp* x x₁ x₂) = hyp* x x₁ (exch-lemma-4 x₂)
+  exchange-admit-Γ idx₁ idx₂ (■I D x x₁) = ■I D x (exch-lemma-4 x₁)   
+  exchange-admit-Γ idx₁ idx₂ (■E D D₁ x x₁) = ■E (exchange-admit-Γ idx₁ idx₂ D) (exchange-admit-Γ idx₁ idx₂ D₁) x (exch-lemma-4 x₁)
+
+  exchange-admit-Δ : ∀ idx₁ idx₂ → (Δ , Γ) ⊢ Aₕ → ((exchange Δ idx₁ idx₂) , Γ) ⊢ Aₕ
+  exchange-admit-Δ idx₁ idx₂ (hyp x x₁ x₂) = hyp x (exch-lemma-5 x₁) x₂
+  exchange-admit-Δ idx₁ idx₂ (⊃I D x x₁) = ⊃I (exchange-admit-Δ idx₁ idx₂ D) (exch-lemma-5 x) x₁
+  exchange-admit-Δ idx₁ idx₂ (⊃E D D₁ x x₁) = ⊃E (exchange-admit-Δ idx₁ idx₂ D) (exchange-admit-Δ idx₁ idx₂ D₁) (exch-lemma-5 x) x₁
+  exchange-admit-Δ idx₁ idx₂ (hyp* x x₁ x₂) = hyp* (exch-lemma-3 x) (exch-lemma-5 x₁) x₂
+  exchange-admit-Δ idx₁ idx₂ (■I D x x₁) = ■I (exchange-admit-Δ idx₁ idx₂ D) (exch-lemma-5 x) x₁
+  exchange-admit-Δ idx₁ idx₂ (■E D D₁ x x₁) = ■E (exchange-admit-Δ idx₁ idx₂ D) (exchange-admit-Δ (suc idx₁) (suc idx₂) D₁) (exch-lemma-5 x) x₁
+
+  exchange-admit : ∀ idx₁ idx₂ idx₃ idx₄ → (Δ , Γ) ⊢ Aₕ → (((exchange Δ idx₁ idx₂) , Γ) ⊢ Aₕ) × ((Δ , (exchange Γ idx₃ idx₄)) ⊢ Aₕ)
+  exchange-admit idx₁ idx₂ idx₃ idx₄ D = (exchange-admit-Δ idx₁ idx₂ D) , (exchange-admit-Γ idx₃ idx₄ D)
+
+  private
+    -- Let's test out exchange

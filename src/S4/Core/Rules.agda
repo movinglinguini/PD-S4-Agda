@@ -61,35 +61,35 @@ module S4.Core.Rules
   extractOnlyValid-isValid ((fst , valid) ∷ Δ) = onlyv/s (extractOnlyValid-isValid Δ)
 
   {- Rules of Pfenning-Davies S4 using CARVe contexts. -}
-  data _⊢_ : Context n → Proposition × Hypothesis → Set where
+  data _⊢_ : (Context n × Context m) → Proposition × Hypothesis → Set where
     {- Truth judgements -}
     hyp :
-      (A , true) ∈ Δ
+      (A , true) ∈ Γ  → OnlyValid Δ   → OnlyTrue Γ
       ------------------------
-      → Δ ⊢ (A , true)
+      → (Δ , Γ) ⊢ (A , true)
     
     ⊃I : 
-      ((A , true) ∷ Δ) ⊢ (B , true)
+      ( Δ , ((A , true) ∷ Γ)) ⊢ (B , true) → OnlyValid Δ   → OnlyTrue Γ
       ---------------------------
-      → Δ ⊢ (A ⊃ B , true)
+      → (Δ , Γ) ⊢ (A ⊃ B , true)
 
     ⊃E :
-      Δ ⊢ (A ⊃ B , true)    →   Δ ⊢ (A , true)
+      (Δ , Γ) ⊢ (A ⊃ B , true)    →   (Δ , Γ) ⊢ (A , true) → OnlyValid Δ   → OnlyTrue Γ
       ------------------------------------------
-      → Δ ⊢ (B , true)
+      → (Δ , Γ) ⊢ (B , true)
     
     {- Validity judgments -}
     hyp* : 
-      (B , valid) ∈ Δ
+      (B , valid) ∈ Δ → OnlyValid Δ   → OnlyTrue Γ
       -----------------------
-      → Δ ⊢ (B , true)
+      → (Δ , Γ) ⊢ (B , true)
 
     ■I : 
-      (toVec (extractOnlyValid Δ)) ⊢ (A , true)
+      (Δ , []) ⊢ (A , true) → OnlyValid Δ   → OnlyTrue Γ
       -----------------------
-      → Δ ⊢ (■ A , true)
+      → (Δ , Γ) ⊢ (■ A , true)
 
     ■E :
-      Δ ⊢ (■ A , true)    →   ((A , valid) ∷ Δ) ⊢ (C , true)
+      (Δ , Γ) ⊢ (■ A , true)    →   (((A , valid) ∷ Δ) , Γ) ⊢ (C , true) → OnlyValid Δ   → OnlyTrue Γ
       -------------------------------------------------------
-      → Δ ⊢ (C , true)
+      → (Δ , Γ) ⊢ (C , true)
