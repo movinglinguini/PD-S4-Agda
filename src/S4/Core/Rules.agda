@@ -85,9 +85,9 @@ module S4.Core.Rules
       → Δ ⊢ (B , true)
 
     ■I : 
-      Δ ⊢ (A , true)  →   OnlyValid Δ   → OnlyTrue Γ
+      (toVec (extractOnlyValid Δ)) ⊢ (A , true)
       -----------------------
-      → (Δ ++ Γ) ⊢ (■ A , true)
+      → Δ ⊢ (■ A , true)
 
     ■E :
       Δ ⊢ (■ A , true)    →   ((A , valid) ∷ Δ) ⊢ (C , true)

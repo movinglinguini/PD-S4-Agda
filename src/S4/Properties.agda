@@ -76,10 +76,21 @@ module S4.Properties
   ... | yes p = here p
   exch-lemma-3 {idx₁ = suc idx₁} {suc idx₂} (there mem) = there (exch-lemma-3 mem)
 
+  exch-lemma-4 : toVec (extractOnlyValid Δ) ⊢ (A , true) → toVec (extractOnlyValid (exchange Δ idx₁ idx₂)) ⊢ (A , true)
+  exch-lemma-4 (hyp x) = hyp {! x  !}
+    where
+      lem : Aₕ ∈ toVec (extractOnlyValid Δ) → Aₕ ∈ toVec (extractOnlyValid (exchange Δ idx₁ idx₂))
+      lem mem = {! mem  !}
+  exch-lemma-4 (⊃I D) = {!   !}
+  exch-lemma-4 (⊃E D D₁) = {!   !}
+  exch-lemma-4 (hyp* x) = {!   !}
+  exch-lemma-4 (■I D) = {!   !}
+  exch-lemma-4 (■E D D₁) = {!   !}
+
   exchange-admit : ∀ idx₁ idx₂ → Δ ⊢ Aₕ → (exchange Δ idx₁ idx₂) ⊢ Aₕ
   exchange-admit idx₁ idx₂ (hyp x) = hyp (exch-lemma-3 x)
   exchange-admit idx₁ idx₂ (⊃I D) = {!   !}
   exchange-admit idx₁ idx₂ (⊃E D D₁) = {!   !}
   exchange-admit idx₁ idx₂ (hyp* x) = hyp* (exch-lemma-3 x)
-  exchange-admit idx₁ idx₂ (■I {Δ = Δ} D v t) = ■I (exchange-admit {!   !} {!   !} {!   !}) {!   !} {!   !}
+  exchange-admit idx₁ idx₂ (■I D) = ■I {!   !}
   exchange-admit idx₁ idx₂ (■E D D₁) = {!   !}
