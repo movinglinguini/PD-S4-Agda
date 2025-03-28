@@ -1,11 +1,10 @@
 open import Data.Nat hiding (_<_; _≟_)
 open import Data.Fin hiding (_+_; _≟_)
 open import Data.Vec
-open import Data.Vec.Bounded hiding (_∷_)
 open import Data.Vec.Membership.Propositional
 open import Data.Vec.Relation.Unary.Any hiding (lookup)
 open import Data.Product
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Relation.Binary.Definitions
 open import Relation.Nullary.Decidable
 open import Relation.Nullary
@@ -21,12 +20,14 @@ module S4.Properties
 
   private
     variable
-      n m : ℕ
+      n m p q : ℕ
       A B C : Proposition
       h g i : Hypothesis
       Aₕ Bₕ : (Proposition × Hypothesis)
-      Δ Δ' : Context n
-      Γ Γ' : Context m
+      Δ : Context n
+      Δ' : Context p
+      Γ : Context m
+      Γ' : Context q
       idx idx₁ idx₂ : Fin n
       idx₃ idx₄ : Fin m
 
@@ -100,8 +101,29 @@ module S4.Properties
   exchange-admit-Δ idx₁ idx₂ (■I D x x₁) = ■I (exchange-admit-Δ idx₁ idx₂ D) (exch-lemma-5 x) x₁
   exchange-admit-Δ idx₁ idx₂ (■E D D₁ x x₁) = ■E (exchange-admit-Δ idx₁ idx₂ D) (exchange-admit-Δ (suc idx₁) (suc idx₂) D₁) (exch-lemma-5 x) x₁
 
+  -- Main theorem : we can simultaneously exchange in both halves of the context
   exchange-admit : ∀ idx₁ idx₂ idx₃ idx₄ → (Δ , Γ) ⊢ Aₕ → (((exchange Δ idx₁ idx₂) , Γ) ⊢ Aₕ) × ((Δ , (exchange Γ idx₃ idx₄)) ⊢ Aₕ)
   exchange-admit idx₁ idx₂ idx₃ idx₄ D = (exchange-admit-Δ idx₁ idx₂ D) , (exchange-admit-Γ idx₃ idx₄ D)
 
-  private
-    -- Let's test out exchange
+  {- Weakening -}
+  weaken-admit-Γ : (Δ , Γ) ⊢ Aₕ → (Δ , Bₕ ∷ Γ) ⊢ Aₕ
+
+  weaken-admit-Δ : (Δ , Γ) ⊢ Aₕ → (Bₕ ∷ Δ , Γ) ⊢ Aₕ
+
+  {- Contraction -}
+  
+
+  {- Substitution theorem -}
+  subst-lemma-1 : OnlyTrue(Γ ++ [ Aₕ ] ++ Γ') → OnlyTrue (Γ ++ Γ')
+  subst-lemma-1 {Γ = Vec.[]} {Γ' = Vec.[]} ot = onlyt/z
+  subst-lemma-1 {Γ = []} {Aₕ} {Γ' = x ∷ Γ'} (onlyt/s ot) = ot
+  subst-lemma-1 {Γ = x ∷ Γ} {Aₕ} {Γ' = []} (onlyt/s ot) = onlyt/s (subst-lemma-1 ot)
+  subst-lemma-1 {Γ = x ∷ Γ} {Γ' = x₁ ∷ Γ'} (onlyt/s ot) = onlyt/s (subst-lemma-1 ot)
+
+  substitution-1 : (Δ , (Γ ++ [ Aₕ ] ++ Γ' )) ⊢ Bₕ → (Δ , Γ) ⊢ Aₕ → (Δ , Γ ++ Γ') ⊢ Bₕ
+  substitution-1 (hyp x x₁ x₂) D2 = {!   !} 
+  substitution-1 {Γ = Γ} {A , true} {Γ' = Γ'} (⊃I {A = A₁} D1 x x₁) D2 = ⊃I (substitution-1 { Γ = (A₁ , true) ∷ Γ } D1 (weaken-admit-Γ D2)) x (subst-lemma-1 x₁)
+  substitution-1 (⊃E D1 D3 x x₁) D2 = ⊃E (substitution-1 D1 D2) (substitution-1 D3 D2) x (subst-lemma-1 x₁)
+  substitution-1 (hyp* x x₁ x₂) D2 = hyp* x x₁ (subst-lemma-1 x₂)
+  substitution-1 (■I D1 x x₁) D2 = ■I D1 x (subst-lemma-1 x₁)                   
+  substitution-1 (■E D1 D3 x x₁) D2 = ■E (substitution-1 D1 D2) (substitution-1 D3 (weaken-admit-Δ D2)) x (subst-lemma-1 x₁)    
