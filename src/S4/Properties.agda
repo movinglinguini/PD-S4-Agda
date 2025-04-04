@@ -105,8 +105,15 @@ module S4.Properties
   exchange-admit : ∀ idx₁ idx₂ idx₃ idx₄ → (Δ , Γ) ⊢ Aₕ → (((exchange Δ idx₁ idx₂) , Γ) ⊢ Aₕ) × ((Δ , (exchange Γ idx₃ idx₄)) ⊢ Aₕ)
   exchange-admit idx₁ idx₂ idx₃ idx₄ D = (exchange-admit-Δ idx₁ idx₂ D) , (exchange-admit-Γ idx₃ idx₄ D)
 
+  exchange-Γ₀ : (Δ , (Γ ++ [ Aₕ ] ++ Γ')) ⊢ Bₕ → (Δ , ([ Aₕ ] ++ Γ ++ Γ')) ⊢ Bₕ
+  exchange-Γ₀ {Γ = []} D = D
+  exchange-Γ₀ {Γ = x ∷ Γ} {Aₕ} {Γ' = Γ'} D = {!   !}
+    where
+      indexOf-Aₕ : Fin (length (x ∷ Γ ++ [ Aₕ ] ++ Γ'))
+      indexOf-Aₕ = inject≤ (fromℕ (length (x ∷ Γ))) (s≤s {!   !})
+
   {- Weakening -}
-  weaken-admit-Γ : (Δ , Γ) ⊢ Aₕ → (Δ , Bₕ ∷ Γ) ⊢ Aₕ
+  weaken-admit-Γ : (Δ , Γ) ⊢ Aₕ → (Δ , Γ ++ Γ') ⊢ Aₕ
 
   weaken-admit-Δ : (Δ , Γ) ⊢ Aₕ → (Bₕ ∷ Δ , Γ) ⊢ Aₕ
 
@@ -120,10 +127,22 @@ module S4.Properties
   subst-lemma-1 {Γ = x ∷ Γ} {Aₕ} {Γ' = []} (onlyt/s ot) = onlyt/s (subst-lemma-1 ot)
   subst-lemma-1 {Γ = x ∷ Γ} {Γ' = x₁ ∷ Γ'} (onlyt/s ot) = onlyt/s (subst-lemma-1 ot)
 
-  substitution-1 : (Δ , (Γ ++ [ Aₕ ] ++ Γ' )) ⊢ Bₕ → (Δ , Γ) ⊢ Aₕ → (Δ , Γ ++ Γ') ⊢ Bₕ
-  substitution-1 (hyp x x₁ x₂) D2 = {!   !} 
-  substitution-1 {Γ = Γ} {A , true} {Γ' = Γ'} (⊃I {A = A₁} D1 x x₁) D2 = ⊃I (substitution-1 { Γ = (A₁ , true) ∷ Γ } D1 (weaken-admit-Γ D2)) x (subst-lemma-1 x₁)
-  substitution-1 (⊃E D1 D3 x x₁) D2 = ⊃E (substitution-1 D1 D2) (substitution-1 D3 D2) x (subst-lemma-1 x₁)
-  substitution-1 (hyp* x x₁ x₂) D2 = hyp* x x₁ (subst-lemma-1 x₂)
-  substitution-1 (■I D1 x x₁) D2 = ■I D1 x (subst-lemma-1 x₁)                   
-  substitution-1 (■E D1 D3 x x₁) D2 = ■E (substitution-1 D1 D2) (substitution-1 D3 (weaken-admit-Δ D2)) x (subst-lemma-1 x₁)    
+
+  subst-lemma-2 : (Δ , Γ) ⊢ Aₕ → OnlyTrue Γ 
+  subst-lemma-3 : (Δ , Γ) ⊢ Aₕ → OnlyValid Δ
+  subst-lemma-4 : OnlyValid (Δ ++ [ Aₕ ] ++ Δ') → OnlyValid (Δ ++ Δ')
+  
+  -- This is known as the generalised implication introduction 
+  -- (see: https://www.researchgate.net/publication/335083302_Axiomatic_and_Dual_Systems_for_Constructive_Necessity_a_Formally_Verified_Equivalence)
+  GEN→I : (Δ , (Γ ++ [ (A , true) ] ++ Γ' )) ⊢ (B , true) → (Δ , Γ ++ Γ') ⊢ ((A ⊃ B) , true)
+  GEN→I {Γ = []} D = ⊃I D {!   !} {!   !}
+  GEN→I {Γ = x ∷ Γ} D = ⊃I (exchange-Γ₀ D) {!   !} {!   !}
+
+  substitution-1 : (Δ , (Γ ++ [ (A , true) ] ++ Γ' )) ⊢ (B , true) → (Δ , Γ) ⊢ ( A , true ) → (Δ , Γ ++ Γ') ⊢ (B , true)
+  substitution-1 D1 D2 = ⊃E (GEN→I D1) (weaken-admit-Γ D2) (subst-lemma-3 D1) (subst-lemma-1 (subst-lemma-2 D1))
+  -- substitution-1 (hyp {A = A} x x₁ x₂) D2 = ⊃E {!   !} {!   !} {!   !} {!   !} 
+  -- substitution-1 {Γ = Γ} {A , true} {Γ' = Γ'} (⊃I {A = A₁} D1 x x₁) D2 = ⊃I (substitution-1 { Γ = (A₁ , true) ∷ Γ } D1 (weaken-admit-Γ D2)) x (subst-lemma-1 x₁)
+  -- substitution-1 (⊃E D1 D3 x x₁) D2 = ⊃E (substitution-1 D1 D2) (substitution-1 D3 D2) x (subst-lemma-1 x₁)
+  -- substitution-1 (hyp* x x₁ x₂) D2 = hyp* x x₁ (subst-lemma-1 x₂)
+  -- substitution-1 (■I D1 x x₁) D2 = ■I D1 x (subst-lemma-1 x₁)                        
+  -- substitution-1 (■E D1 D3 x x₁) D2 = ■E (substitution-1 D1 D2) (substitution-1 D3 (weaken-admit-Δ D2)) x (subst-lemma-1 x₁)     
