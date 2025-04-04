@@ -105,9 +105,3 @@ module S4.Properties
   exchange-admit : ∀ idx₁ idx₂ idx₃ idx₄ → (Δ , Γ) ⊢ Aₕ → (((exchange Δ idx₁ idx₂) , Γ) ⊢ Aₕ) × ((Δ , (exchange Γ idx₃ idx₄)) ⊢ Aₕ)
   exchange-admit idx₁ idx₂ idx₃ idx₄ D = (exchange-admit-Δ idx₁ idx₂ D) , (exchange-admit-Γ idx₃ idx₄ D)
 
-  exchange-Γ₀ : (Δ , (Γ ++ [ Aₕ ] ++ Γ')) ⊢ Bₕ → (Δ , ([ Aₕ ] ++ Γ ++ Γ')) ⊢ Bₕ
-  exchange-Γ₀ {Γ = []} D = D
-  exchange-Γ₀ {Γ = x ∷ Γ} {Aₕ} {Γ' = Γ'} D = {!   !}
-    where
-      indexOf-Aₕ : Fin (length (x ∷ Γ ++ [ Aₕ ] ++ Γ'))
-      indexOf-Aₕ = inject≤ (fromℕ (length (x ∷ Γ))) (s≤s {!   !})
