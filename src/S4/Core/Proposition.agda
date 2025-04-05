@@ -22,6 +22,9 @@ module S4.Core.Proposition
       x₁ x₂ : PropAtom
       A₁ A₂ B₁ B₂ A B : Proposition
 
+  {-
+    Building up decidable equality between propositions 
+  -}
   ≡⇒≡ : (` x₁) ≡ (` x₂) → x₁ ≡ x₂
   ≡⇒≡ refl = refl
 
