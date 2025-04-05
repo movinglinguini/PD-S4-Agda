@@ -15,12 +15,13 @@ module S4.Core.Rules
   where
   open import S4.Core.Proposition PropAtom _≟ₚ_
   open import S4.Core.Hypothesis
+  
+  private
+    data _∙_⇒_ : Hypothesis → Hypothesis → Hypothesis → Set where
+      t∙t : true ∙ true ⇒ true
+      v∙v : valid ∙ valid ⇒ valid
 
-  data _∙_⇒_ : Hypothesis → Hypothesis → Hypothesis → Set where
-    t∙t : true ∙ true ⇒ true
-    v∙v : valid ∙ valid ⇒ valid
-
-  open import CARVe.Context Proposition Hypothesis _∙_⇒_ public
+    open import CARVe.Context Proposition Hypothesis _∙_⇒_ public
 
   private
     variable
@@ -48,48 +49,36 @@ module S4.Core.Rules
       ------------------
       → OnlyTrue ((A , true) ∷ Γ)
 
-  -- We'll need a way to strip away truth judgements from a context
-  extractOnlyValid : Context n → Vec≤ (Proposition × Hypothesis) n
-  extractOnlyValid [] = [] , z≤n
-  extractOnlyValid (_∷_ {n} (fst , true) Δ) = ≤-cast (n≤1+n n) (extractOnlyValid Δ)
-  extractOnlyValid ((fst , valid) ∷ Δ) = (fst , valid) ∷b (extractOnlyValid Δ)
-
-  -- Proof that our function above does what we think it does
-  extractOnlyValid-isValid : (Δ : Context n) → OnlyValid (toVec (extractOnlyValid Δ))
-  extractOnlyValid-isValid [] = onlyv/z
-  extractOnlyValid-isValid ((fst , true) ∷ Δ) = extractOnlyValid-isValid Δ
-  extractOnlyValid-isValid ((fst , valid) ∷ Δ) = onlyv/s (extractOnlyValid-isValid Δ)
-
   {- Rules of Pfenning-Davies S4 using CARVe contexts. -}
   data _⊢_ : (Context n × Context m) → Proposition × Hypothesis → Set where
     {- Truth judgements -}
     hyp :
-      (A , true) ∈ Γ  → OnlyValid Δ   → OnlyTrue Γ
+      (A , true) ∈ Γ
       ------------------------
       → (Δ , Γ) ⊢ (A , true)
     
     ⊃I : 
-      ( Δ , ((A , true) ∷ Γ)) ⊢ (B , true) → OnlyValid Δ   → OnlyTrue Γ
+      ( Δ , ((A , true) ∷ Γ)) ⊢ (B , true)
       ---------------------------
       → (Δ , Γ) ⊢ (A ⊃ B , true)
 
     ⊃E :
-      (Δ , Γ) ⊢ (A ⊃ B , true)    →   (Δ , Γ) ⊢ (A , true) → OnlyValid Δ   → OnlyTrue Γ
+      (Δ , Γ) ⊢ (A ⊃ B , true)    →   (Δ , Γ) ⊢ (A , true)
       ------------------------------------------
       → (Δ , Γ) ⊢ (B , true)
     
     {- Validity judgments -}
     hyp* : 
-      (B , valid) ∈ Δ → OnlyValid Δ   → OnlyTrue Γ
+      (B , valid) ∈ Δ
       -----------------------
       → (Δ , Γ) ⊢ (B , true)
 
     ■I : 
-      (Δ , []) ⊢ (A , true) → OnlyValid Δ   → OnlyTrue Γ
+      (Δ , []) ⊢ (A , true)
       -----------------------
       → (Δ , Γ) ⊢ (■ A , true)
 
     ■E :
-      (Δ , Γ) ⊢ (■ A , true)    →   (((A , valid) ∷ Δ) , Γ) ⊢ (C , true) → OnlyValid Δ   → OnlyTrue Γ
+      (Δ , Γ) ⊢ (■ A , true)    →   (((A , valid) ∷ Δ) , Γ) ⊢ (C , true)
       -------------------------------------------------------
       → (Δ , Γ) ⊢ (C , true)

@@ -80,26 +80,21 @@ module S4.Properties
   ... | yes p = here p
   exch-lemma-3 {idx₁ = suc idx₁} {suc idx₂} (there mem) = there (exch-lemma-3 mem)
 
-  postulate 
-  -- These seem trivially true, but very annoying to prove
-    exch-lemma-4 : OnlyTrue Γ → OnlyTrue (exchange Γ idx₁ idx₂)
-    exch-lemma-5 : OnlyValid Δ → OnlyValid (exchange Δ idx₁ idx₂)
-
   exchange-admit-Γ : ∀ idx₁ idx₂ → (Δ , Γ) ⊢ Aₕ → (Δ , (exchange Γ idx₁ idx₂)) ⊢ Aₕ
-  exchange-admit-Γ idx₁ idx₂ (hyp x x₁ x₂) = hyp (exch-lemma-3 x) x₁ (exch-lemma-4 x₂)
-  exchange-admit-Γ idx₁ idx₂ (⊃I D x x₁) = ⊃I (exchange-admit-Γ (suc idx₁) (suc idx₂) D) x (exch-lemma-4 x₁)
-  exchange-admit-Γ idx₁ idx₂ (⊃E D D₁ x x₁) = ⊃E (exchange-admit-Γ idx₁ idx₂ D) (exchange-admit-Γ idx₁ idx₂ D₁) x (exch-lemma-4 x₁)
-  exchange-admit-Γ idx₁ idx₂ (hyp* x x₁ x₂) = hyp* x x₁ (exch-lemma-4 x₂)
-  exchange-admit-Γ idx₁ idx₂ (■I D x x₁) = ■I D x (exch-lemma-4 x₁)   
-  exchange-admit-Γ idx₁ idx₂ (■E D D₁ x x₁) = ■E (exchange-admit-Γ idx₁ idx₂ D) (exchange-admit-Γ idx₁ idx₂ D₁) x (exch-lemma-4 x₁)
+  exchange-admit-Γ idx₁ idx₂ (hyp x) = hyp (exch-lemma-3 x)
+  exchange-admit-Γ idx₁ idx₂ (⊃I D) = ⊃I (exchange-admit-Γ (suc idx₁) (suc idx₂) D)
+  exchange-admit-Γ idx₁ idx₂ (⊃E D D₁) = ⊃E (exchange-admit-Γ idx₁ idx₂ D) (exchange-admit-Γ idx₁ idx₂ D₁)
+  exchange-admit-Γ idx₁ idx₂ (hyp* x) = hyp* x
+  exchange-admit-Γ idx₁ idx₂ (■I D) = ■I D  
+  exchange-admit-Γ idx₁ idx₂ (■E D D₁) = ■E (exchange-admit-Γ idx₁ idx₂ D) (exchange-admit-Γ idx₁ idx₂ D₁)
 
   exchange-admit-Δ : ∀ idx₁ idx₂ → (Δ , Γ) ⊢ Aₕ → ((exchange Δ idx₁ idx₂) , Γ) ⊢ Aₕ
-  exchange-admit-Δ idx₁ idx₂ (hyp x x₁ x₂) = hyp x (exch-lemma-5 x₁) x₂
-  exchange-admit-Δ idx₁ idx₂ (⊃I D x x₁) = ⊃I (exchange-admit-Δ idx₁ idx₂ D) (exch-lemma-5 x) x₁
-  exchange-admit-Δ idx₁ idx₂ (⊃E D D₁ x x₁) = ⊃E (exchange-admit-Δ idx₁ idx₂ D) (exchange-admit-Δ idx₁ idx₂ D₁) (exch-lemma-5 x) x₁
-  exchange-admit-Δ idx₁ idx₂ (hyp* x x₁ x₂) = hyp* (exch-lemma-3 x) (exch-lemma-5 x₁) x₂
-  exchange-admit-Δ idx₁ idx₂ (■I D x x₁) = ■I (exchange-admit-Δ idx₁ idx₂ D) (exch-lemma-5 x) x₁
-  exchange-admit-Δ idx₁ idx₂ (■E D D₁ x x₁) = ■E (exchange-admit-Δ idx₁ idx₂ D) (exchange-admit-Δ (suc idx₁) (suc idx₂) D₁) (exch-lemma-5 x) x₁
+  exchange-admit-Δ idx₁ idx₂ (hyp x) = hyp x
+  exchange-admit-Δ idx₁ idx₂ (⊃I D) = ⊃I (exchange-admit-Δ idx₁ idx₂ D)
+  exchange-admit-Δ idx₁ idx₂ (⊃E D D₁) = ⊃E (exchange-admit-Δ idx₁ idx₂ D) (exchange-admit-Δ idx₁ idx₂ D₁)
+  exchange-admit-Δ idx₁ idx₂ (hyp* x) = hyp* (exch-lemma-3 x)
+  exchange-admit-Δ idx₁ idx₂ (■I D) = ■I (exchange-admit-Δ idx₁ idx₂ D)
+  exchange-admit-Δ idx₁ idx₂ (■E D D₁) = ■E (exchange-admit-Δ idx₁ idx₂ D) (exchange-admit-Δ (suc idx₁) (suc idx₂) D₁)
 
   -- Main theorem : we can simultaneously exchange in both halves of the context
   exchange-admit : ∀ idx₁ idx₂ idx₃ idx₄ → (Δ , Γ) ⊢ Aₕ → (((exchange Δ idx₁ idx₂) , Γ) ⊢ Aₕ) × ((Δ , (exchange Γ idx₃ idx₄)) ⊢ Aₕ)
