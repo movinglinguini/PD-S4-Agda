@@ -5,7 +5,7 @@ module S4.Logic
   (_≟ₚ_ : DecidableEquality PropAtom)
   where
   {- Repackage components of S4. -}
-  open import S4.Core.Hypothesis public
+  open import S4.Core.Hypothesis public hiding (_≟_)
   open import S4.Core.Proposition PropAtom _≟ₚ_ public hiding (_≟_)
   open import S4.Core.Rules PropAtom _≟ₚ_ public
 
