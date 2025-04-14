@@ -29,9 +29,8 @@ module S4.Core.Rules
   data _⊢_ : (HypContext n Validity) × (HypContext m Truth) → Proposition × Hypothesis → Set where
     {- Truth judgements -}
     hyp :
-      (to/truth (A , true) prop/true) ∈ʰ Γ
       ------------------------
-      → (Δ , Γ) ⊢ (A , true)
+      (Δ , (to/truth (A , true) prop/true) ∷ʰ Γ) ⊢ (A , true)
     
     ⊃I : 
       ( Δ , (to/truth (A , true) prop/true ∷ʰ Γ)) ⊢ (B , true)
@@ -45,9 +44,8 @@ module S4.Core.Rules
     
     {- Validity judgments -}
     hyp* : 
-      to/validity (B , valid) prop/valid ∈ʰ Δ
       -----------------------
-      → (Δ , Γ) ⊢ (B , true)
+      ((to/validity (B , valid) prop/valid) ∷ʰ Δ , Γ) ⊢ (B , true)
 
     ■I : 
       (Δ , ([] , onlyt/z)) ⊢ (A , true)
