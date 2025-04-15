@@ -48,6 +48,11 @@ module S4.Properties
   detach-⊃ hyp* = ⊃I hyp*
   detach-⊃ (■I D) = ⊃I (■I D)
   detach-⊃ (■E D D₁) = ⊃I (■E D D₁)
+  detach-⊃ (∧I D D₁) = ⊃I (∧I D D₁)
+  detach-⊃ (∧E₁ D) = ⊃I (∧E₁ D)
+  detach-⊃ (∧E₂ D) = ⊃I (∧E₂ D)
+  detach-⊃ (∨I₁ D) = ⊃I (∨I₁ D)
+  detach-⊃ (∨I₂ D) = ⊃I (∨I₂ D)
 
   -- Generalized implication lemma for S4
   gen-⊃ : (Δ , Γ) ⊢ (A , true) → (Δ , Γ) ⊢ (A ⊃ B , true) → (Δ , Γ) ⊢ (B , true) 
@@ -57,5 +62,10 @@ module S4.Properties
   gen-⊃ hyp* D2 = ⊃E D2 hyp*
   gen-⊃ (■I D1) D2 = ⊃E D2 (■I D1)
   gen-⊃ (■E D1 D3) D2 = ⊃E D2 (■E D1 D3)
+  gen-⊃ (∧I D1 D3) D2 = ⊃E D2 (∧I D1 D3)
+  gen-⊃ (∧E₁ D1) D2 = ⊃E D2 (∧E₁ D1)
+  gen-⊃ (∧E₂ D1) D2 = ⊃E D2 (∧E₂ D1)
+  gen-⊃ (∨I₁ D1) D2 = ⊃E D2 (∨I₁ D1)
+  gen-⊃ (∨I₂ D1) D2 = ⊃E D2 (∨I₂ D1)
 
   
