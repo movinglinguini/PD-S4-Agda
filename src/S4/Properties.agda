@@ -40,32 +40,43 @@ module S4.Properties
     {- Weakening -}
     weaken-Γ : ∀ { Γ : HypContext m Truth } → (Δ , ([] , onlyt/z)) ⊢ Aₕ → (Δ , Γ) ⊢ Aₕ
 
+    {- Substitution Lemmas -}
+    subst-1 : 
+      (Δ , (to/truth (A , true) prop/true) ∷ʰ Γ) ⊢ Bₕ
+      → (Δ , Γ) ⊢ (A , true)
+      → (Δ , Γ) ⊢ Bₕ
+
+    subst-2 : 
+      ((to/validity (A , valid) prop/valid) ∷ʰ Δ , Γ) ⊢ Bₕ 
+      → (Δ , ([] , onlyt/z )) ⊢ (A , true)
+      → (Δ , Γ) ⊢ Bₕ
+
   -- Detachment lemma. Got the idea for this from https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/dualcontext-sequent-calculus-for-the-constructive-modal-logic-s4/6C2B03C7BCCD1DECC924E48BA3A2E43D
   detach-⊃ : (Δ , (to/truth (A , true) prop/true) ∷ʰ Γ) ⊢ (B , true) → (Δ , Γ) ⊢ (A ⊃ B , true)
-  detach-⊃ hyp = ⊃I hyp
+  detach-⊃ (hyp x) = ⊃I (hyp x)
   detach-⊃ (⊃I D) = ⊃I (detach-⊃ D)
   detach-⊃ (⊃E D D₁) = ⊃I (⊃E D D₁)
-  detach-⊃ hyp* = ⊃I hyp*
+  detach-⊃ (hyp* x) = ⊃I (hyp* x)
   detach-⊃ (■I D) = ⊃I (■I D)
   detach-⊃ (■E D D₁) = ⊃I (■E D D₁)
-  detach-⊃ (∧I D D₁) = ⊃I (∧I D D₁)
-  detach-⊃ (∧E₁ D) = ⊃I (∧E₁ D)
-  detach-⊃ (∧E₂ D) = ⊃I (∧E₂ D)
-  detach-⊃ (∨I₁ D) = ⊃I (∨I₁ D)
-  detach-⊃ (∨I₂ D) = ⊃I (∨I₂ D)
+  -- detach-⊃ (∧I D D₁) = ⊃I (∧I D D₁)
+  -- detach-⊃ (∧E₁ D) = ⊃I (∧E₁ D)
+  -- detach-⊃ (∧E₂ D) = ⊃I (∧E₂ D)
+  -- detach-⊃ (∨I₁ D) = ⊃I (∨I₁ D)
+  -- detach-⊃ (∨I₂ D) = ⊃I (∨I₂ D)
 
   -- Generalized implication lemma for S4
   gen-⊃ : (Δ , Γ) ⊢ (A , true) → (Δ , Γ) ⊢ (A ⊃ B , true) → (Δ , Γ) ⊢ (B , true) 
-  gen-⊃ hyp D2 = ⊃E D2 hyp
+  gen-⊃ (hyp x) D2 = ⊃E D2 (hyp x)
   gen-⊃ (⊃I D1) D2 = ⊃E D2 (detach-⊃ D1)
   gen-⊃ (⊃E D1 D3) D2 = ⊃E D2 (⊃E D1 D3)
-  gen-⊃ hyp* D2 = ⊃E D2 hyp*
+  gen-⊃ (hyp* x) D2 = ⊃E D2 (hyp* x)
   gen-⊃ (■I D1) D2 = ⊃E D2 (■I D1)
   gen-⊃ (■E D1 D3) D2 = ⊃E D2 (■E D1 D3)
-  gen-⊃ (∧I D1 D3) D2 = ⊃E D2 (∧I D1 D3)
-  gen-⊃ (∧E₁ D1) D2 = ⊃E D2 (∧E₁ D1)
-  gen-⊃ (∧E₂ D1) D2 = ⊃E D2 (∧E₂ D1)
-  gen-⊃ (∨I₁ D1) D2 = ⊃E D2 (∨I₁ D1)
-  gen-⊃ (∨I₂ D1) D2 = ⊃E D2 (∨I₂ D1)
+  -- gen-⊃ (∧I D1 D3) D2 = ⊃E D2 (∧I D1 D3)
+  -- gen-⊃ (∧E₁ D1) D2 = ⊃E D2 (∧E₁ D1)
+  -- gen-⊃ (∧E₂ D1) D2 = ⊃E D2 (∧E₂ D1)
+  -- gen-⊃ (∨I₁ D1) D2 = ⊃E D2 (∨I₁ D1)
+  -- gen-⊃ (∨I₂ D1) D2 = ⊃E D2 (∨I₂ D1)
 
-  
+   

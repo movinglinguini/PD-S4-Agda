@@ -28,8 +28,9 @@ module S4.Core.Rules
   {- Rules of Pfenning-Davies S4 using CARVe contexts. -}
   data _⊢_ : (HypContext n Validity) × (HypContext m Truth) → Proposition × Hypothesis → Set where
     hyp :
+      (to/truth (A , true) prop/true) ∈ʰ Γ
       ------------------------
-      (Δ , (to/truth (A , true) prop/true) ∷ʰ Γ) ⊢ (A , true)
+      → (Δ , Γ) ⊢ (A , true)
     
     ⊃I : 
       ( Δ , (to/truth (A , true) prop/true ∷ʰ Γ)) ⊢ (B , true)
@@ -41,34 +42,35 @@ module S4.Core.Rules
       ------------------------------------------
       → (Δ , Γ) ⊢ (B , true)
 
-    ∧I : 
-      (Δ , Γ) ⊢ (A , true)   →   (Δ , Γ) ⊢ (B , true)
-      --------------------------------------
-      → (Δ , Γ) ⊢ (A ∧ B , true)
+    -- ∧I : 
+    --   (Δ , Γ) ⊢ (A , true)   →   (Δ , Γ) ⊢ (B , true)
+    --   --------------------------------------
+    --   → (Δ , Γ) ⊢ (A ∧ B , true)
 
-    ∧E₁ : 
-      (Δ , Γ) ⊢ (A ∧ B , true)
-      ------------------------
-      → (Δ , Γ) ⊢ (A , true)
+    -- ∧E₁ : 
+    --   (Δ , Γ) ⊢ (A ∧ B , true)
+    --   ------------------------
+    --   → (Δ , Γ) ⊢ (A , true)
     
-    ∧E₂ : 
-      (Δ , Γ) ⊢ (A ∧ B , true)
-      ------------------------
-      → (Δ , Γ) ⊢ (B , true)
+    -- ∧E₂ : 
+    --   (Δ , Γ) ⊢ (A ∧ B , true)
+    --   ------------------------
+    --   → (Δ , Γ) ⊢ (B , true)
 
-    ∨I₁ : 
-      (Δ , Γ) ⊢ (A , true)
-      --------------------
-      → (Δ , Γ) ⊢ (A ∨ B , true)
+    -- ∨I₁ : 
+    --   (Δ , Γ) ⊢ (A , true)
+    --   --------------------
+    --   → (Δ , Γ) ⊢ (A ∨ B , true)
 
-    ∨I₂ : 
-      (Δ , Γ) ⊢ (B , true)
-      ---------------------
-      → (Δ , Γ) ⊢ (A ∨ B , true)
+    -- ∨I₂ : 
+    --   (Δ , Γ) ⊢ (B , true)
+    --   ---------------------
+    --   → (Δ , Γ) ⊢ (A ∨ B , true)
     
-    hyp* : 
+    hyp* :
+      (to/validity (B , valid) prop/valid) ∈ʰ Δ 
       -----------------------
-      ((to/validity (B , valid) prop/valid) ∷ʰ Δ , Γ) ⊢ (B , true)
+      → (Δ , Γ) ⊢ (B , true)
 
     ■I : 
       (Δ , ([] , onlyt/z)) ⊢ (A , true)
